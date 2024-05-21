@@ -1,0 +1,112 @@
+<html lang="ko">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        
+        <script src="//unpkg.com/globe.gl"></script>
+        <style>
+            body {
+                margin: 0;
+            }
+
+            .marker {
+                border-radius: 50%;
+                width: fit-content;
+                height: fit-content;
+                padding: 5px;
+                background-color: aquamarine;
+            }
+
+            .marker-img {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+            }
+
+            video {
+                width: 100vw;
+                height: 100vh;
+                object-fit: cover;
+            }
+        </style>
+        <script>
+            const create_marker = (img_url) => {
+                const wrapper = document.createElement('div');
+                wrapper.classList.add('marker');
+
+                const img = document.createElement('img');
+                img.src = img_url;
+                img.classList.add('marker-img');
+                wrapper.appendChild(img);
+                return wrapper;
+            }
+        
+            const load_data = async ()=> {
+                return await fetch('./data.json', {
+                    method: 'GET'
+                }).then((response)=>response.json())
+            }
+
+            const create_globe = (gData) => {
+                let glb = Globe()
+                    .globeImageUrl('./resource/world.png')
+                    .htmlElementsData(gData)
+                    .htmlElement(d => {
+                        const el = document.createElement('div');
+                        let marker_img = d.img ? d.img : './resource/logo.jpg';
+                        el.appendChild(create_marker(marker_img));
+                        
+                        el.style['pointer-events'] = 'auto';
+                        el.style.cursor = 'pointer';
+                        el.onclick = () => {
+                            window.open(d.map_url);
+                        };
+                        return el;
+                    });
+                
+                return glb;
+            }
+
+            const get_url_index = () => {
+                let url = new URL(window.location);
+                let hash = url.hash.slice(1);
+                if (!hash) return null;
+                let n_index = Number(hash);
+                return Number.isNaN(n_index) ? null : n_index;
+            }
+        </script>
+    </head>
+    <body>
+    <div id="globeCanvas"></div>
+    <video src="./resource/logo.mp4" id="vid_logo" autoplay muted playsinline></video>
+    <script>
+        let globe;
+        const data_index = get_url_index();
+        document.addEventListener('DOMContentLoaded', ()=> {
+            const map_data = load_data();
+            const logo = document.getElementById('vid_logo');
+            logo.addEventListener('play', ()=>{
+                //logo.muted = false;
+            });
+
+            logo.addEventListener('ended', ()=>{
+                map_data.then((gData)=>{
+                    globe = create_globe(gData);
+                    globe(document.getElementById('globeCanvas'));
+                    if (Number.isInteger(data_index) && data_index < gData.length) {
+                        let cData = gData[data_index];
+                        cData = {
+                            lat: Number(cData.lat),
+                            lng: Number(cData.lng),
+                            altitude: 2
+                        }
+                        globe.pointOfView(cData);
+                        globe.pointOfView({altitude: 0.3}, 4000);
+                    }
+                    logo.style.display = 'none';
+                });
+            });
+        });
+    </script>
+    </body>
+</html>
