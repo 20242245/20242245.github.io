@@ -1,0 +1,26 @@
+[{
+    "lat":"37.44851",
+    "lng":"127.1262",
+    "img":null,
+    "map_url":"https://maps.app.goo.gl/PMD1YGuAB7rPJY7m6",
+    "name":"test1"
+},
+{
+    "lat":"37.6484812",
+    "lng":"127.1500720",
+    "img":null,
+    "map_url":"https://maps.app.goo.gl/PMD1YGuAB7rPJY7m6",
+    "name":"test2"
+},{
+    "lat":"38.6484812",
+    "lng":"127.1500720",
+    "img":null,
+    "map_url":"",
+    "name":"test3"
+},{
+    "lat":"39.6484812",
+    "lng":"127.1500720",
+    "img":null,
+    "map_url":"",
+    "name":"test4"
+}]
